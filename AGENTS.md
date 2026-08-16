@@ -41,11 +41,19 @@ Galaxy Invasion: Sector Defense — browser remake of the 1980 Big Five TRS-80 a
 - `// verification hook` fields (e.g. `SectorRun.testInvuln`, the `window.__*` globals) are dev-only; never route gameplay through them.
 - No formatter/linter config exists; `tsconfig.json` strict flags (`noUnusedLocals`, `noUncheckedIndexedAccess`, …) are the only guardrails.
 
-### Agent workflow (this repo's process conventions)
+## Agent skills
 
-- **Issue tracker** — issues and specs are local markdown under `.scratch/<feature>/`. Whenever a skill says "publish to the issue tracker" or "fetch the relevant ticket", or mentions wayfinding (map, frontier, claim/resolve): read `docs/agents/issue-tracker.md` first.
-- **Triage roles** — when a skill names a triage role, use the canonical label strings from `docs/agents/triage-labels.md` (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`).
-- **Domain** — single-context repo: one `CONTEXT.md` + `docs/adr/` at the root. Before exploring the codebase, read `CONTEXT.md` and any ADR touching the area; use the glossary verbatim: Sector, Front, Wave (never "level"), Flagship Attack Alert (never "alarm"), Phosphor, 1-bit audio; aliens are Scout/Warrior/Bodyguard/Flagship (never "invaders"). Conflicts with an ADR get flagged, not silently overridden. See `docs/agents/domain.md`.
+### Issue tracker
+
+Issues and specs live as GitHub issues in szabolcs007/galaxy-invasion-sector-defense (gh CLI). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Five canonical roles with default label strings (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
 
 ## Important Files
 
@@ -71,5 +79,5 @@ Galaxy Invasion: Sector Defense — browser remake of the 1980 Big Five TRS-80 a
 ## Testing & QA
 
 - No automated test suite: no test files, no runner, no `test` script. Do not add a runner unless asked.
-- QA is documented browser-driven smoke testing (README "Tesztelés / verifikáció"): headless Chromium reading framebuffer and game state through the `window.__*` hooks.
+- QA is documented browser-driven smoke testing (README "Testing / verification"): headless Chromium reading framebuffer and game state through the `window.__*` hooks.
 - Canonical checks to re-run after behavioral changes: state flow (Title → Attract → StarMap → Playing → outcomes); ship movement (60 blocks/s, clamped) + one-shot rule; scoring (formation Warrior = 40; sector-2 diving Scout = 30×2×2 = 120); Flagship Alert (20 s grace → 5 s alert → lightning → restart); campaign (5 waves → front +1, loss → −1, front 8 → CampaignWon, front 1 loss → CampaignLost, reload persistence); escalation (deep-sector threshold reachable, Flagship row grows).
