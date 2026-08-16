@@ -5,11 +5,11 @@ Jeff Konyu, 1980, TRS-80 Model I/III, 16K RAM). The game is a **Galaxian
 clone, not Space Invaders**: fixed shooter, one shot at a time, an alien
 formation with distinct roles (Bodyguards protecting the Flagship),
 dive-bombers, double points for shooting an attacking alien, and the Flagship
-Attack Alert that always ends in a fatal lightning strike. The target is the
+Attack Alert that always ends in a fatal lightning strike. Inspiration was the
 **1980 sound special edition** (the canonical release with the title-screen
 tune, transition/fire/alien sounds and the flagship alert).
 
-The twist: a **linear sector-defense campaign** — an 8-sector tug-of-war on
+Small twist: a **linear sector-defense campaign** — an 8-sector tug-of-war on
 the front line, layered on top of the classic arcade loop.
 
 ---
@@ -91,7 +91,7 @@ available resolution — see `docs/adr/0003-fidelity-reconstruction.md`).
 
 ---
 
-## The campaign (the twist)
+## The campaign
 
 - **8 sectors** in a line; the front starts at 1 (outermost/weakest).
 - **Win** (clear 5 waves): front +1. **Loss** (ships exhausted): front −1
@@ -197,4 +197,3 @@ plan), sector economy (`campaign.ts`), SFX/tune (`sound.ts`, `music.ts`).
 
 - Galaxy Invasion at trs-80.org: <http://www.trs-80.org/galaxy-invasion/>
 - Super Nova (the Flagship's first appearance): <http://www.trs-80.org/super-nova/>
-- Reference gameplay video (for audio analysis): YouTube `SAPPvqsc5V4`
