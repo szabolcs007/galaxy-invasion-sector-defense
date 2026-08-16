@@ -1,201 +1,200 @@
 # Galaxy Invasion: Sector Defense
 
-Egy hűséges webes remake a **Galaxy Invasion**-ről (Big Five Software, Bill
-Hogue & Jeff Konyu, 1980, TRS-80 Model I/III, 16K RAM). A játék **Galaxian
-klón, nem Space Invaders**: fix lövő, egyszerre egy lövés, alien-formáció
-külön szerepekkel (Bodyguard őrzi a Flagshipet), dive-bombázók, dupla pont a
-támadó alienre lövésért, és a Flagship Attack Alert, amelynek lejárta mindig
-halálos villámcsapást szabadít el. A célváltozat az **1980-as sound special
-edition** (a címképernyős dallammal, átmenet/lövés/alien-hangokkal és a
-flagship-riadóval rendelkező kanonikus kiadás).
+A faithful web remake of **Galaxy Invasion** (Big Five Software, Bill Hogue &
+Jeff Konyu, 1980, TRS-80 Model I/III, 16K RAM). The game is a **Galaxian
+clone, not Space Invaders**: fixed shooter, one shot at a time, an alien
+formation with distinct roles (Bodyguards protecting the Flagship),
+dive-bombers, double points for shooting an attacking alien, and the Flagship
+Attack Alert that always ends in a fatal lightning strike. The target is the
+**1980 sound special edition** (the canonical release with the title-screen
+tune, transition/fire/alien sounds and the flagship alert).
 
-A csavar: egy **lineáris szektor-védelmi kampány** — 8 szektor kötélhúzása a
-frontvonalon, a klasszikus árkád-loop tetejére rétegezve.
+The twist: a **linear sector-defense campaign** — an 8-sector tug-of-war on
+the front line, layered on top of the classic arcade loop.
 
 ---
 
-## Futtatás
+## Running
 
-Node 20+ szükséges.
+Node 20+ required.
 
 ```bash
 npm install
-npm run dev        # fejlesztői szerver -> http://localhost:5173
+npm run dev        # dev server -> http://localhost:5173
 ```
 
-Gyártási build és előnézet:
+Production build and preview:
 
 ```bash
-npm run build      # tsc strict + vite build a dist/-be
-npm run preview    # a build helyi előnézete
+npm run build      # tsc strict + vite build into dist/
+npm run preview    # local preview of the build
 ```
 
 ---
 
-## Irányítás
+## Controls
 
-| Billentyű     | Művelet                                                              |
-| ------------- | -------------------------------------------------------------------- |
-| `←` / `A`     | hajó balra                                                           |
-| `→` / `D`     | hajó jobbra                                                          |
-| `Space` / `↑` | lövés (él-vezérelt; egyszerre csak egy lövés él)                     |
-| `Enter`       | star map indítása / szektor indítása (lezárt kampánynál: új kampány) |
-| `Esc`         | futás feladása (a star mapra; pontszám nem számít)                   |
-| `T`           | foszfor szín váltása: zöld → fehér → borostyán                       |
+| Key           | Action                                                |
+| ------------- | ----------------------------------------------------- |
+| `←` / `A`     | ship left                                             |
+| `→` / `D`     | ship right                                            |
+| `Space` / `↑` | fire (edge-triggered; only one shot alive at a time)  |
+| `Enter`       | open star map / launch sector (new campaign if ended) |
+| `Esc`         | abandon run (to the star map; no score)               |
+| `T`           | phosphor tint: green → white → amber                  |
 
-Gamepad: d-pad/bal-stick mozgatás, 0-s gomb (alsó arcképgomb) lövés.
-Szünet nincs — az 1980-as eredetiben sem volt.
-
----
-
-## Játékmenet
-
-- **Képernyőfolyam**: Title (dallammal) → 2s vagy bármely billentyű → Attract
-  (a formáció önműködő demója) → bármely billentyű → Star Map → Enter →
-  játékmenet → szektor-kimenetel → Star Map.
-- **Hajó**: alsó sor, vízszintes mozgás (60 blokk/s), 3 hajó, minden
-  10 000 pont után +1 hajó.
-- **Formáció**: 4 sor × 10 alien (Scout, Warrior, Bodyguard, Warrior-változat),
-  csoportosan oszcillál. Az alienek két póz között animálnak (képkockánként
-  szinkronban, ~500 ms).
-- **Dive-bombázók**: időzítőre egy alien elhagyja a formációt, Bézier-ívű
-  bukásban a hajó alá süvíti, az ív 0.3-nál egy bombát ejt, majd vagy
-  visszatér a formációba, vagy kamikaze-ként a hajóba csapódik.
-- **Flagship Attack Alert**: ha egy Flagship 20 mp-ig a képernyőn marad
-  megsemmisítés nélkül, két-tónusú riasztó indul; 5 mp múlva minden élő
-  Flagship mindig-halálos villámot lő. Egy Flagship lelövése újraindítja a
-  ciklust. (Az eredeti ritka "közel-miss" hibája nem reprodukált: a villám
-  mindig halálos.)
-- **Eszkaláció**: a szektor-küszöb felett (mély szektorokban hamarabb) a
-  riasztó folyamatos, és a Flagship-sor pontokkal nő, amíg meg nem telik.
+Gamepad: d-pad/left stick to move, button 0 (bottom face button) to fire.
+No pause — the 1980 original had none either.
 
 ---
 
-## Pontozás
+## Gameplay
 
-`pont = alap × (támadó ? 2 : 1) × szektor-szorzó`
-
-| Típus     | Alap  |
-| --------- | ----- |
-| Scout     | 30    |
-| Warrior   | 40    |
-| Bodyguard | 50    |
-| Flagship  | 80    |
-
-Példa (a terv verifikációs esete): 2. szektorban (×2) egy búvó Scout lelövése
-`30 × 2 × 2 = 120` pont.
-
-Az alapértékek a dokumentált szabályok + Galaxian-mintájú rekonstrukció
-(az instrukció-képernyő OCR-je megtörtént, de az értékek olvashatatlanok a
-felbontásban — lásd `docs/adr/0003-fidelity-reconstruction.md`).
-
----
-
-## A kampány (a twist)
-
-- **8 szektor** egy vonalban; a front az 1.-nél indul (legkülső/leggyengébb).
-- **Győzelem** (5 hullám törlése): front +1. **Vereség** (hajók elfogytak):
-  front −1 (szektor-újrapróbálás — nincs kampány-törlés, csak visszavonulás).
-- Front 0 = kampány vesztve; front 9 = kampány nyerve.
-- Szektoronként rögzített (nem adaptív) visszajelzés:
-  - Flagship-ek induláskor: `min(1 + (N−1), 16)`
-  - dive-tempó szorzó: `1 + 0.15(N−1)`
-  - pontszorzó: `N`
-- **Eszkalációs küszöb**: `200 000 / (8N)` (mély = hamarabb, de az 1. szektor
-  sosem eszkalálódik), növekedési lépés `max(500, 40 000 / (8N))`.
-- **Mentés**: `localStorage` kulcs `gisector.v1` (front, bestFront,
-  bestScores[8], stats: flagshipEscapes/sectorsWon/sectorsLost). Verziózott,
-  ismeretlen verzió → alapértékek.
+- **Screen flow**: Title (with tune) → 2 s or any key → Attract (self-running
+  formation demo) → any key → Star Map → Enter → gameplay → sector outcome →
+  Star Map.
+- **Ship**: bottom row, horizontal movement (60 blocks/s), 3 ships, +1 ship
+  every 10 000 points.
+- **Formation**: 4 rows × 10 aliens (Scout, Warrior, Bodyguard,
+  Warrior-variant), oscillating in groups. Aliens animate between two poses
+  (frame-synchronized, ~500 ms).
+- **Dive-bombers**: on a timer an alien leaves the formation, swoops at the
+  ship on a Bézier arc, drops a bomb at 0.3 of the arc, then either returns
+  to the formation or kamikazes into the ship.
+- **Flagship Attack Alert**: if a Flagship stays on screen for 20 s without
+  being destroyed, a two-tone alert starts; 5 s later every living Flagship
+  fires always-fatal lightning. Destroying a Flagship restarts the cycle.
+  (The original's rare "near-miss" bug is not reproduced: the lightning is
+  always fatal.)
+- **Escalation**: above the sector threshold (sooner in deep sectors) the
+  alert is continuous and the Flagship row grows with points until full.
 
 ---
 
-## Technikai felépítés
+## Scoring
+
+`points = base × (attacking ? 2 : 1) × sector multiplier`
+
+| Type      | Base |
+| --------- | ---- |
+| Scout     | 30   |
+| Warrior   | 40   |
+| Bodyguard | 50   |
+| Flagship  | 80   |
+
+Example (the plan's verification case): shooting a diving Scout in sector 2
+(×2) scores `30 × 2 × 2 = 120` points.
+
+The base values are a documented-rules + Galaxian-inspired reconstruction
+(the instruction-screen OCR was done, but the values are illegible at the
+available resolution — see `docs/adr/0003-fidelity-reconstruction.md`).
+
+---
+
+## The campaign (the twist)
+
+- **8 sectors** in a line; the front starts at 1 (outermost/weakest).
+- **Win** (clear 5 waves): front +1. **Loss** (ships exhausted): front −1
+  (sector retry — no campaign wipe, just a retreat).
+- Front 0 = campaign lost; front 9 = campaign won.
+- Fixed (non-adaptive) feedback per sector:
+  - starting Flagships: `min(1 + (N−1), 16)`
+  - dive-tempo multiplier: `1 + 0.15(N−1)`
+  - score multiplier: `N`
+- **Escalation threshold**: `200 000 / (8N)` (deeper = sooner, but sector 1
+  never escalates), growth step `max(500, 40 000 / (8N))`.
+- **Save**: `localStorage` key `gisector.v1` (front, bestFront,
+  bestScores[8], stats: flagshipEscapes/sectorsWon/sectorsLost). Versioned;
+  unknown version → defaults.
+
+---
+
+## Technical architecture
 
 - **Platform**: TypeScript (strict, `noUncheckedIndexedAccess`) + Vite
-  (vanilla-ts). Nincs UI-framework, nincs játékmotor.
-- **Renderelés**: 128×48 blokk-framebuffer → Canvas2D integer upscale →
-  kézzel írt WebGL2 CRT pass (scanline 3 soronként, foszfor-bloom +
-  előző-kép persistence, barrel-torzítás + vignette). WebGL2 hiányában sima
-  integer upscale, soha nem omlik össze.
-- **Hang**: WebAudio square `OscillatorNode` (1-bit), 5 ms attack / 15 ms
-  release burkoló, kompresszor-limitern keresztül. A zene lookahead
-  schedulerrel (0.1 s előre, 25 ms-os pump), a render-looptól függetlenül.
-- **Hurok**: `requestAnimationFrame` → felhalmozó (100 ms clamp) → fix
-  60 update/s → renderelés. Képkocka-független 60/120/144 Hz-en.
+  (vanilla-ts). No UI framework, no game engine.
+- **Rendering**: 128×48 block framebuffer → Canvas2D integer upscale →
+  hand-written WebGL2 CRT pass (scanlines every 3 rows, phosphor bloom +
+  previous-frame persistence, barrel distortion + vignette). Without WebGL2:
+  plain integer upscale — never crashes.
+- **Audio**: WebAudio square `OscillatorNode`s (1-bit), 5 ms attack / 15 ms
+  release envelope, through a compressor-limiter. Music runs on a lookahead
+  scheduler (0.1 s ahead, 25 ms pump), independent of the render loop.
+- **Loop**: `requestAnimationFrame` → accumulator (100 ms clamp) → fixed
+  60 updates/s → render. Frame-rate independent at 60/120/144 Hz.
 
-### Könyvtárstruktúra
+### Directory structure
 
 ```
 src/
-├── main.ts            # boot, fix-timestep loop, állapotgép
+├── main.ts            # boot, fixed-timestep loop, state machine
 ├── game/
-│   ├── state.ts       # GameState + átmenetek
-│   ├── aliens.ts      # formáció-szerepek, dive-útvonalak, riasztó, eszkaláció
-│   ├── run.ts         # egy szektor futása (pontozás, hullámok, életek)
-│   ├── ship.ts        # hajó (mozgás, egy-lövés szabály)
-│   ├── shots.ts       # hajólövés, alien-lövések, bombák, villámok
-│   └── scoring.ts     # pontszámítás (alapértékek, extra hajó, eszkaláció)
+│   ├── state.ts       # GameState + transitions
+│   ├── aliens.ts      # formation roles, dive paths, alert, escalation
+│   ├── run.ts         # one sector run (scoring, waves, lives)
+│   ├── ship.ts        # ship (movement, one-shot rule)
+│   ├── shots.ts       # ship shot, alien shots, bombs, lightning
+│   └── scoring.ts     # points (base values, extra ship, escalation)
 ├── render/
-│   ├── framebuffer.ts # 128×48 blokk-rács (az egyetlen rajzfelület)
-│   ├── crt.ts         # WebGL2 CRT pass (uTint = egyetlen megjelenítési felület)
-│   ├── sprites.ts     # pixel-pontos sprite-sheet (2-frame animáció)
+│   ├── framebuffer.ts # 128×48 block grid (the only drawing surface)
+│   ├── crt.ts         # WebGL2 CRT pass (uTint is the only display surface)
+│   ├── sprites.ts     # pixel-exact sprite sheet (2-frame animation)
 │   └── text.ts        # 3×5 bitmap font
 ├── audio/
-│   ├── sound.ts       # square-wave SFX-készlet (click-free)
-│   └── music.ts       # címdallam lookahead schedulerrel
+│   ├── sound.ts       # square-wave SFX set (click-free)
+│   └── music.ts       # title tune with lookahead scheduler
 ├── input/
-│   ├── keyboard.ts    # billentyűzet (él-vezérelt tűz)
-│   └── gamepad.ts     # gamepad pollozás
+│   ├── keyboard.ts    # keyboard (edge-triggered fire)
+│   └── gamepad.ts     # gamepad polling
 └── meta/
-    ├── campaign.ts    # tug-of-war szabályok, szektor-gazdaság
-    ├── starmap.ts     # a csillagtérkép képernyő
+    ├── campaign.ts    # tug-of-war rules, sector economy
+    ├── starmap.ts     # the star map screen
     └── persistence.ts # gisector.v1 localStorage
 ```
 
-### Forráshivatkozások
+### Sources
 
-- Referencia képernyőképek (trs-80.org), a blokk-rácsra resample-elt mátrixok
-  és az extrakciós jegyzetek: `sprites-source/` (a sprite-ok audit-nyoma).
-- Fogalomtár: `CONTEXT.md`. Döntések: `docs/adr/0001..0003`.
-
----
-
-## Tesztelés / verifikáció
-
-A fejlesztés során böngésző-vezérelt smoke-tesztek futottak az alábbi
-kulcsellenőrzésekkel (headless Chromium, a framebuffer-állapot és a
-játék-állapot egy `window.__*` debug-hookon keresztül olvasható):
-
-1. Állapotfolyam: Title → Attract → StarMap → Playing → kimenetelek.
-2. Hajó-mozgás (60 blokk/s, clampelt), egy-lövés szabály.
-3. Pontozás: formatio-warrior = 40; képlet 120 a szektor-2 búvó Scoutra.
-4. Flagship Alert: 20 s → riasztó → 5 s → villám → ciklus újraindul.
-5. Meta: 5 hullám → front 2; reload után is 2; vesztés → front 1;
-   front 8 → CampaignWon; front 1 vesztés → CampaignLost.
-6. Eszkaláció: mély szektorban a küszöb elérhető, a Flagship-sor nő.
-7. CRT-kimenet: a megjelenített kép álló (nem tükrözött) — a star mapen a
-   „SECTOR DEFENSE" felül, az „ENTER ..." prompt alul látszik.
-8. Lezárt kampány (front 0 vagy 9): Enter a star mapről új kampányt indít
-   (front 1; statisztika és szektoronkénti legjobb pontok megmaradnak).
-
-Debug-hookok (fejlesztéshez): `window.__fb()`, `window.__state()`,
-`window.__run()`, `window.__invuln(v)` (verifikáció-only, a játékmenetet nem
-érinti).
+- Reference screenshots (trs-80.org), matrices resampled to the block grid
+  and the extraction notes: `sprites-source/` (the sprite audit trail).
+- Glossary: `CONTEXT.md`. Decisions: `docs/adr/0001..0003`.
 
 ---
 
-## Hangolás
+## Testing / verification
 
-Minden érzésre ható szám konstans `// tunable` megjegyzéssel van jelölve a
-forrásban: hajó/lövés/bomba sebesség (`ship.ts`, `shots.ts`), dive-ívek és
-időzítők (`aliens.ts`), riasztó-időzítések (`aliens.ts` — a 20 s/5 s a terv
-által rögzített), szektor-gazdaság (`campaign.ts`), SFX/dallam
-(`sound.ts`, `music.ts`).
+During development, browser-driven smoke tests ran with the following key
+checks (headless Chromium; framebuffer state and game state are readable
+through `window.__*` debug hooks):
+
+1. State flow: Title → Attract → StarMap → Playing → outcomes.
+2. Ship movement (60 blocks/s, clamped), one-shot rule.
+3. Scoring: formation Warrior = 40; formula 120 for the sector-2 diving Scout.
+4. Flagship Alert: 20 s → alert → 5 s → lightning → cycle restarts.
+5. Meta: 5 waves → front 2; still 2 after reload; loss → front 1;
+   front 8 → CampaignWon; front 1 loss → CampaignLost.
+6. Escalation: threshold reachable in deep sectors, the Flagship row grows.
+7. CRT output: the displayed image is upright (not mirrored) — on the star
+   map "SECTOR DEFENSE" is on top, the "ENTER ..." prompt at the bottom.
+8. Ended campaign (front 0 or 9): Enter on the star map starts a new campaign
+   (front 1; stats and per-sector best scores are kept).
+
+Debug hooks (development): `window.__fb()`, `window.__state()`,
+`window.__run()`, `window.__invuln(v)` (verification-only, does not affect
+gameplay).
 
 ---
 
-## Hivatkozások
+## Tuning
 
-- Galaxy Invasion a trs-80.org-on: <http://www.trs-80.org/galaxy-invasion/>
-- Super Nova (a Flagship első megjelenése): <http://www.trs-80.org/super-nova/>
-- Referencia gameplay-videó (hang-elemzéshez): YouTube `SAPPvqsc5V4`
+Every feel-affecting number is marked with a `// tunable` comment in the
+source: ship/shot/bomb speed (`ship.ts`, `shots.ts`), dive arcs and timers
+(`aliens.ts`), alert timings (`aliens.ts` — the 20 s/5 s are locked by the
+plan), sector economy (`campaign.ts`), SFX/tune (`sound.ts`, `music.ts`).
+
+---
+
+## References
+
+- Galaxy Invasion at trs-80.org: <http://www.trs-80.org/galaxy-invasion/>
+- Super Nova (the Flagship's first appearance): <http://www.trs-80.org/super-nova/>
+- Reference gameplay video (for audio analysis): YouTube `SAPPvqsc5V4`

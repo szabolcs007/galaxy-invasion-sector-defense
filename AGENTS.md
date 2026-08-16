@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Galaxy Invasion: Sector Defense — browser remake of the 1980 Big Five TRS-80 arcade game "Galaxy Invasion" (a Galaxian clone, never "Space Invaders"). 128×48 block framebuffer, optional WebGL2 CRT post-process, 1-bit square-wave audio via WebAudio, plus a persistent 8-sector tug-of-war campaign (the twist) saved to localStorage. Code comments and docs are Hungarian; the domain glossary (`CONTEXT.md`) is English — quote its terms verbatim.
+Galaxy Invasion: Sector Defense — browser remake of the 1980 Big Five TRS-80 arcade game "Galaxy Invasion" (a Galaxian clone, never "Space Invaders"). 128×48 block framebuffer, optional WebGL2 CRT post-process, 1-bit square-wave audio via WebAudio, plus a persistent 8-sector tug-of-war campaign (the twist) saved to localStorage. Code comments are Hungarian; README and the domain glossary (`CONTEXT.md`) are English — quote the glossary's terms verbatim.
 
 ## Architecture & Data Flow
 
